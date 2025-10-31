@@ -5,12 +5,11 @@ import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PasswordGateProps {
   children: React.ReactNode;
 }
-
-const CORRECT_PASSWORD = 'T@lentPreview2025'; // Change this to your desired password
 
 export const PasswordGate = ({ children }: PasswordGateProps) => {
   const [password, setPassword] = useState('');
@@ -27,23 +26,43 @@ export const PasswordGate = ({ children }: PasswordGateProps) => {
     setIsLoading(false);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     
-    if (password === CORRECT_PASSWORD) {
-      sessionStorage.setItem('portfolio_authenticated', 'true');
-      setIsAuthenticated(true);
-      toast({
-        title: 'Access Granted',
-        description: 'Welcome to the portfolio!',
+    try {
+      const { data, error } = await supabase.functions.invoke('validate-password', {
+        body: { password }
       });
-    } else {
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.isValid) {
+        sessionStorage.setItem('portfolio_authenticated', 'true');
+        setIsAuthenticated(true);
+        toast({
+          title: 'Access Granted',
+          description: 'Welcome to the portfolio!',
+        });
+      } else {
+        toast({
+          title: 'Access Denied',
+          description: 'Incorrect password. Please try again.',
+          variant: 'destructive',
+        });
+        setPassword('');
+      }
+    } catch (error) {
+      console.error('Password validation error:', error);
       toast({
-        title: 'Access Denied',
-        description: 'Incorrect password. Please try again.',
+        title: 'Error',
+        description: 'Failed to validate password. Please try again.',
         variant: 'destructive',
       });
-      setPassword('');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -85,8 +104,8 @@ export const PasswordGate = ({ children }: PasswordGateProps) => {
               />
             </div>
 
-            <Button type="submit" className="w-full">
-              Access Portfolio
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? 'Validating...' : 'Access Portfolio'}
             </Button>
           </form>
 
