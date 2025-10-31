@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 20% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 15%;
+
+    --primary: 210 100% 25%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 330 100% 85%;
+    --secondary-foreground: 210 100% 25%;
+
+    --muted: 220 15% 95%;
+    --muted-foreground: 220 15% 45%;
+
+    --accent: 330 100% 70%;
+    --accent-foreground: 210 100% 25%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 90%;
+    --input: 220 15% 90%;
+    --ring: 217 91% 60%;
+
+    --radius: 0.75rem;
+
+    /* Custom tokens for portfolio */
+    --hero-gradient-start: 217 91% 60%;
+    --hero-gradient-end: 260 85% 65%;
+    --section-bg: 220 20% 98%;
+    --shadow-color: 217 91% 60%;
+  }
+
+  .dark {
+    --background: 220 25% 10%;
+    --foreground: 0 0% 98%;
+
+    --card: 220 25% 12%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 220 25% 12%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 210 100% 30%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 330 100% 30%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 220 20% 18%;
+    --muted-foreground: 220 15% 65%;
+
+    --accent: 330 100% 65%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 20%;
+    --input: 220 20% 20%;
+    --ring: 217 91% 60%;
+
+    --hero-gradient-start: 217 91% 55%;
+    --hero-gradient-end: 260 85% 60%;
+    --section-bg: 220 25% 12%;
+    --shadow-color: 217 91% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .hero-gradient {
+    background: linear-gradient(135deg, hsl(var(--hero-gradient-start)), hsl(var(--hero-gradient-end)));
+  }
+
+  .section-pattern {
+    background-color: hsl(var(--section-bg));
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
