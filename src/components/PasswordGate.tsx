@@ -55,6 +55,17 @@ export const PasswordGate = ({ children }: PasswordGateProps) => {
         throw error;
       }
 
+      if (data?.error) {
+        toast({
+          title: 'Access Denied',
+          description: data.error,
+          variant: 'destructive',
+        });
+        setPassword('');
+        setIsLoading(false);
+        return;
+      }
+
       if (data?.isValid && data?.token) {
         sessionStorage.setItem('portfolio_auth_token', data.token);
         setIsAuthenticated(true);
@@ -63,15 +74,17 @@ export const PasswordGate = ({ children }: PasswordGateProps) => {
           description: 'Welcome to the portfolio!',
         });
       } else {
+        const attemptsMsg = data?.remainingAttempts !== undefined 
+          ? ` (${data.remainingAttempts} attempts remaining)` 
+          : '';
         toast({
           title: 'Access Denied',
-          description: 'Incorrect password. Please try again.',
+          description: `Incorrect password. Please try again.${attemptsMsg}`,
           variant: 'destructive',
         });
         setPassword('');
       }
     } catch (error) {
-      console.error('Password validation error:', error);
       toast({
         title: 'Error',
         description: 'Failed to validate password. Please try again.',
