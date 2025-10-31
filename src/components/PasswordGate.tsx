@@ -18,12 +18,28 @@ export const PasswordGate = ({ children }: PasswordGateProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user is already authenticated in this session
-    const authStatus = sessionStorage.getItem('portfolio_authenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-    }
-    setIsLoading(false);
+    // Check if user has a valid JWT token
+    const verifyToken = async () => {
+      const token = sessionStorage.getItem('portfolio_auth_token');
+      if (token) {
+        try {
+          const { data, error } = await supabase.functions.invoke('validate-password', {
+            body: { token }
+          });
+
+          if (!error && data?.isValid) {
+            setIsAuthenticated(true);
+          } else {
+            sessionStorage.removeItem('portfolio_auth_token');
+          }
+        } catch {
+          sessionStorage.removeItem('portfolio_auth_token');
+        }
+      }
+      setIsLoading(false);
+    };
+
+    verifyToken();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,8 +55,8 @@ export const PasswordGate = ({ children }: PasswordGateProps) => {
         throw error;
       }
 
-      if (data?.isValid) {
-        sessionStorage.setItem('portfolio_authenticated', 'true');
+      if (data?.isValid && data?.token) {
+        sessionStorage.setItem('portfolio_auth_token', data.token);
         setIsAuthenticated(true);
         toast({
           title: 'Access Granted',
